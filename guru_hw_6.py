@@ -1,8 +1,5 @@
 from datetime import date, datetime
 
-
-
-
 test_emails = [
     "user@gmail.com"
     "admin@company.ru",
@@ -24,8 +21,6 @@ test_emails = [
 ]
 
 
-
-
 def normalize_addresses(value: str) -> str:
     """
     Возвращает значение, в котором адрес приведен к нижнему регистру и очищен от пробелов по краям.
@@ -38,7 +33,7 @@ def add_short_body(email: dict) -> dict:
     Возвращает email с новым ключом email["short_body"] —
     первые 10 символов тела письма + "...".
     """
-    email["short_body"]  = email["body"][:10] + "..."
+    email["short_body"] = email["body"][:10] + "..."
     return email["short_body"]
 
 
@@ -50,7 +45,6 @@ def clean_body_text(body: str) -> str:
     return body
 
 
-
 def build_sent_text(email: dict) -> str:
     """
     Формирует текст письма в формате:
@@ -60,13 +54,13 @@ def build_sent_text(email: dict) -> str:
     {clean_body}
     """
     return (
-        f"Кому: {email['recipient']}, от: {email['sender']}\n"
-        f"Тема: {email['subject']}, дата: {email['date']}\n"
-        f"{email['body']}"
+        f"""Кому: {email['recipient']}, от: {email['sender']}\n
+        Тема: {email['subject']}, дата: {email['date']}\n
+        {email['body']}"""
     )
 
 
-def check_empty_fields(subject: str, body:str) -> tuple[bool, bool]:
+def check_empty_fields(subject: str, body: str) -> tuple[bool, bool]:
     """
     Возвращает кортеж (is_subject_empty, is_body_empty).
     True, если поле пустое.
@@ -84,8 +78,6 @@ def mask_sender_email(login: str, domain: str) -> str:
     return masked_email
 
 
-
-
 def get_correct_email(email_list: list[str]) -> list[str]:
     """
     Возвращает список корректных email.
@@ -94,11 +86,12 @@ def get_correct_email(email_list: list[str]) -> list[str]:
     result = []
     for email in email_list:
         if '.' in email and '@' in email:
-            domain= email[(email.rindex('.')):].strip()
+            domain = email[(email.rindex('.')):].strip()
             if domain in correct_domains and email.count('@') == 1:
                 result.append(email)
 
     return result
+
 
 def create_email(sender: str, recipient: str, subject: str, body: str) -> dict:
     """
@@ -111,7 +104,6 @@ def create_email(sender: str, recipient: str, subject: str, body: str) -> dict:
         "subject": subject,
         "body": body
     }
-
 
 
 def add_send_date(email: dict) -> dict:
@@ -135,14 +127,7 @@ def extract_login_domain(address: str) -> tuple[str, str]:
     return login, domain
 
 
-
-
-
-
-
 def sender_email(recipient_list: list[str], subject: str, message: str, *, sender="default@study.com") -> list[dict]:
-
-
     # Проверить, что recipient_list не пустой.
     if not recipient_list:
         raise ValueError("Список получателей не может быть пустым")
@@ -163,9 +148,8 @@ def sender_email(recipient_list: list[str], subject: str, message: str, *, sende
 
     # Исключить отправку самому себе: пройти по каждому элементу recipient_list в цикле for, если адрес совпадает с sender, удалить его из списка.
     for recipient in correct_recipient_list:
-        if recipient == sender.strip():
+        if recipient.strip() == sender.strip():
             correct_recipient_list.remove(recipient)
-
 
     # Нормализовать: subject и body → с помощью clean_body_text() recipient_list и sender → с помощью normalize_addresses()
     subject = clean_body_text(subject)
@@ -175,7 +159,6 @@ def sender_email(recipient_list: list[str], subject: str, message: str, *, sende
         correct_recipient_list[index] = normalize_addresses(recipient)
 
     sender = normalize_addresses(sender)
-
 
     # Создать письмо для каждого получателя функцией create_email().
     emails = []
@@ -202,6 +185,6 @@ def sender_email(recipient_list: list[str], subject: str, message: str, *, sende
     return emails
 
 
-
-
-print(sender_email(test_emails, 'Тема', 'Hello,\nWe are interested in a partnership.\tPlease reply soon.\nRegards,\nTeam"', sender='sender@study.com'))
+print(sender_email(test_emails, 'Тема',
+                   'Hello,\nWe are interested in a partnership.\tPlease reply soon.\nRegards,\nTeam"',
+                   sender='sender@study.com'))
